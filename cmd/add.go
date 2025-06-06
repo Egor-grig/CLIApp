@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -33,15 +34,20 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new task",
 	Long:  "Add a new task with name and state",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		openJSON(jsonName, &tasks)
+
+		if taskState != "To Do" && taskState != "In Progress" && taskState != "Done" {
+			return errors.New("must be 'To Do', 'In Progress' or 'Done'")
+		}
 
 		tasks.Tasks = append(tasks.Tasks, Task{taskText, taskState})
 
 		writeJSON(jsonName, tasks)
 
 		fmt.Println("Task add")
+		return nil
 	},
 }
 
